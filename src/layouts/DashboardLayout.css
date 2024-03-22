@@ -17,9 +17,9 @@ margin-block: 20px !important;
     
 }
 
-:where(.css-dev-only-do-not-override-djtmh8).ant-switch {
+:where(.css-dev-only-do-not-override-djtmh8).ant-switch , :where(.css-djtmh8).ant-switch {
     background-color: #ccc !important;
 }
-:where(.css-dev-only-do-not-override-djtmh8).ant-switch.ant-switch-checked {
+:where(.css-dev-only-do-not-override-djtmh8).ant-switch.ant-switch-checked , :where(.css-djtmh8).ant-switch.ant-switch-checked {
     background-color: #7c3aed !important;
 }

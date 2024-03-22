@@ -33,7 +33,7 @@ const items = [
 const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeKey, setactiveKey] = useState(location.pathname);
+  const [activeKey, setactiveKey] = useState(location.pathname == '/'?'/add-customer':location.pathname);
 
   const handleNavigate = (e) => {
     // console.log(e);
@@ -41,13 +41,16 @@ const DashboardLayout = () => {
     setactiveKey(e.key);
   };
   useEffect(() => {
+  console.log(activeKey);
+  }, [activeKey])
+  useEffect(() => {
     console.log(location.pathname);
     if (location.pathname == '/') {
     setactiveKey('/add-customer');
     }else {
       setactiveKey(location.pathname);
     }
-  }, [location.pathname, activeKey]);
+  }, [location.pathname]);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -78,7 +81,7 @@ const DashboardLayout = () => {
           style={{ fontSize: 18 }}
           defaultSelectedKeys={[activeKey]}
           items={items}
-          activeKey={activeKey}
+          activeKey={location.pathname =='/'?'/add-customer':activeKey}
         />
       </Sider>
       <Layout
