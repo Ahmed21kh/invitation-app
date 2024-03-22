@@ -1,0 +1,34 @@
+:where(.css-dev-only-do-not-override-djtmh8).ant-table-wrapper .ant-table-tbody .ant-table-row.ant-table-row-selected >.ant-table-cell , :where(.css-djtmh8).ant-table-wrapper .ant-table-tbody .ant-table-row.ant-table-row-selected >.ant-table-cell {
+    background: #ffffff;
+}
+
+:where(.css-dev-only-do-not-override-djtmh8).ant-checkbox-checked .ant-checkbox-inner , :where(.css-djtmh8).ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #7c3aed;
+    border-color: #7c3aed;
+}
+
+:where(.css-dev-only-do-not-override-djtmh8).ant-checkbox-checked:not(.ant-checkbox-disabled):hover .ant-checkbox-inner , :where(.css-djtmh8).ant-checkbox-checked:not(.ant-checkbox-disabled):hover .ant-checkbox-inner {
+    background-color: #7c3aed !important;
+    border-color: transparent;
+}
+
+:where(.css-dev-only-do-not-override-djtmh8).ant-checkbox-indeterminate .ant-checkbox-inner:after , :where(.css-djtmh8).ant-checkbox-indeterminate .ant-checkbox-inner:after {
+    top: 50%;
+    inset-inline-start: 50%;
+    width: 8px;
+    height: 8px;
+    background-color: #7c3aed !important;
+    border: 0;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    content: "";
+}
+:where(.css-dev-only-do-not-override-djtmh8).ant-pagination .ant-pagination-item-active a , :where(.css-djtmh8).ant-pagination .ant-pagination-item-active a  {
+    color: #7c3aed !important;
+}
+
+:where(.css-dev-only-do-not-override-djtmh8).ant-pagination .ant-pagination-item-active , :where(.css-djtmh8).ant-pagination .ant-pagination-item-active {
+    font-weight: 600;
+    background-color: #ffffff;
+    border-color: #7c3aed !important;
+}
