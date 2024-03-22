@@ -32,3 +32,6 @@
     background-color: #ffffff;
     border-color: #7c3aed !important;
 }
+:where(.css-dev-only-do-not-override-djtmh8).ant-table-wrapper .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after , :where(.css-djtmh8).ant-table-wrapper .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after {
+    box-shadow: none !important;
+}

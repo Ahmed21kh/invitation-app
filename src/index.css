@@ -14,3 +14,24 @@
 body{
   height: 100vh;
 }
+::-webkit-scrollbar {
+  width: 0px;
+  height: 2px !important;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #c6c6c6;
+  height: 2px !important;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  height: 2px !important;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

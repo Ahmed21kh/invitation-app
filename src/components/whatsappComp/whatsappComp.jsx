@@ -49,11 +49,13 @@ const WhatsappComp = () => {
     if (navigator.onLine) {
       setAuth(false);
       socket.on("QRCODE", async (qr) => {
-        socket.once("Authenticated", (data) => {
+        socket.on("Authenticated", (data) => {
           setAuth(data);
           localStorage.removeItem("Auth");
         });
         console.log("QrCode", qr);
+        localStorage.removeItem("Auth");
+        setAuth(false)
         setActiveLoading(false);
         if (qr) {
           console.log(socket.id);

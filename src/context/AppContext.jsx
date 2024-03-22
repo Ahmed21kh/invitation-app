@@ -75,7 +75,14 @@ export function AppContext({ children }) {
       setActiveLoading(true);
       setActive(!active);
       if (process.env.REACT_APP_SOCKET_URL) {
-        createNewWebSocket();
+        createNewWebSocket()
+          if (socket) {
+            socket.once("Authenticated", (data) => {
+              setAuth(data);
+              localStorage.removeItem("Auth");
+            });
+          }
+      
       }
     }
   };

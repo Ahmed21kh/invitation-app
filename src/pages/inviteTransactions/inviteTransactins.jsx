@@ -9,7 +9,7 @@ function InviteTransactins() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [inviteTransactions, setinviteTransactions] = useState([])
     const [loadingData, setloadingData] = useState(false)
-    const [pageSize, setpageSize] = useState(5)
+    const [pageSize, setpageSize] = useState(10)
     const [pageNumber, setpageNumber] = useState(1)
     const [totalPages, settotalPages] = useState(0)
     const [inviteDetailsModal, setinviteDetailsModal] = useState(false)
@@ -21,13 +21,7 @@ function InviteTransactins() {
         loadingBtn,
         socket
      } = useContext(Context)
-useEffect(() => {
-    if (socket) {
-     socket.on("updatedData",(data) => {
-        setinviteTransactions(prev =>[...prev.map((d)=>d._id === data._id?{...d,sending_status:data?.sending_status}:d)])
-     })   
-    }
-}, [socket])
+
 
     const showModal = () => {
       setIsModalOpen(true);
@@ -47,7 +41,8 @@ useEffect(() => {
         getInviteTransactionApi(pageNumber,pageSize).then((res)=>{
           console.log(res);
           let newData = res[0]?.data?.map((e,i)=>{return{key:i,...e}})
-          let total = res[0]?.metaData[0]?.totalPages
+          let total = res[0]?.metaData[0]?.total
+          console.log(total);
           setinviteTransactions(newData)
           settotalPages(total)
          setloadingData(false)
@@ -83,7 +78,14 @@ useEffect(() => {
     getAllinviteTransactions()
     }, [pageNumber])
   
-  
+    useEffect(() => {
+      if (socket) {
+       socket.on("updatedData",(data) => {
+       getAllinviteTransactions()
+          // setinviteTransactions(prev =>[...prev.map((d)=>d._id === data._id?{...d,sending_status:data?.sending_status}:d)])
+       })   
+      }
+  }, [socket])
     const columns = [
       {
         title: 'اسم العميل',
@@ -133,7 +135,7 @@ useEffect(() => {
       getCheckboxProps: (record) => ({
         disabled: record.sending_status === 'sent',
         // Column configuration not to be checked
-        name: record.name,
+        name: record.customerDetails.customer_name,
       }),
     };
     return (
@@ -147,6 +149,9 @@ useEffect(() => {
           pagination={false}
           direction='rtl'
           style={{direction:'rtl'}}
+          scroll={{
+            x: 1000,
+          }}
           rowSelection={{
             type: "checkbox",
             ...rowSelection,
@@ -156,7 +161,7 @@ useEffect(() => {
           dataSource={inviteTransactions}
         />
         <div className=' bg-white p-3' dir='rtl'>
-        <Pagination style={{direction:'ltr'}} responsive onChange={changePage} defaultCurrent={pageNumber} total={totalPages} />
+        <Pagination style={{direction:'ltr'}} responsive onChange={changePage} pageSize={pageSize} defaultCurrent={pageNumber} total={totalPages} />
         </div>
       </div>
       {/* send message modal */}
