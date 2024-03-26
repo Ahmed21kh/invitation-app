@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Col, Divider, Input, Modal, Pagination, Radio, Row, Table, Tooltip, message } from 'antd';
+import { Button, Col, Divider, Input, Modal, Pagination, Radio, Row, Select, Table, Tooltip, message } from 'antd';
 import { MdInfo, MdInfoOutline, MdWhatsapp } from 'react-icons/md';
 import { getInviteTransactionApi } from '../../services/Apis';
 import "./inviteTransactins.css"
 import { Context } from '../../context/AppContext';
+import { Controller, useForm } from 'react-hook-form';
 function InviteTransactins() {
     const [selectionType, setSelectionType] = useState('checkbox');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,7 +22,8 @@ function InviteTransactins() {
         loadingBtn,
         socket
      } = useContext(Context)
-
+     const [searchQuery, setsearchQuery] = useState('')
+     const {register, getValues , setValue , handleSubmit , control , watch,reset} = useForm()
 
     const showModal = () => {
       setIsModalOpen(true);
@@ -38,7 +40,7 @@ function InviteTransactins() {
     const getAllinviteTransactions = () =>{
       try {
         setloadingData(true)
-        getInviteTransactionApi(pageNumber,pageSize).then((res)=>{
+        getInviteTransactionApi(pageNumber,pageSize , searchQuery).then((res)=>{
           console.log(res);
           let newData = res[0]?.data?.map((e,i)=>{return{key:i,...e}})
           let total = res[0]?.metaData[0]?.total
@@ -74,9 +76,41 @@ function InviteTransactins() {
   setinviteDetailsModal(false)
   setinviteDetails({});
   }
+    // useEffect(() => {
+    // getAllinviteTransactions()
+    // }, [pageNumber])
+
+    const handleSearch = (data)=>{
+      console.log(data);
+      const {customer_name, customer_mobile, invite_name, sending_status} = data;
+     let x = ''
+     if(customer_name){
+       x += `&customer_name=${customer_name}&`
+     }
+     if(customer_mobile){
+       x += `&customer_mobile=${customer_mobile}&`
+     }
+     if(invite_name){
+       x += `&invite_name=${invite_name}&`
+     }
+     if(sending_status){
+       x += `&sending_status=${sending_status}&`
+     }
+     setsearchQuery(x)
+     setpageNumber(1)
+    }
+    const handleClearSearch = ()=>{
+      reset({
+       customer_name: '',
+       customer_mobile: '',
+       invite_name: '',
+       sending_status: null
+      })
+      setsearchQuery('')
+     }
     useEffect(() => {
-    getAllinviteTransactions()
-    }, [pageNumber])
+     getAllinviteTransactions()
+    }, [searchQuery ,pageNumber])
   
     useEffect(() => {
       if (socket) {
@@ -86,6 +120,12 @@ function InviteTransactins() {
        })   
       }
   }, [socket])
+
+  useEffect(() => {
+  
+  }, [watch.name])
+
+
     const columns = [
       {
         title: 'اسم العميل',
@@ -140,10 +180,48 @@ function InviteTransactins() {
     };
     return (
       <>
-      <div className=' w-full px-5'>
-        <div className=' my-4'>
-          <Button loading={loadingBtn} onClick={handleSendMessage}  type='primary' size='large' className='  bg-violet-600 flex items-center hover:!bg-violet-500' icon={<MdWhatsapp fontSize={20}/>}>ارسال</Button>
-        </div>
+      <div className=' w-full h-full px-5 pt-[80px] overflow-auto '>
+        <form onSubmit={handleSubmit(handleSearch)} className=' my-4'>
+          <Row  dir='rtl'  gutter={[24,24]}>
+             <Col xs={24} md={12} lg={4}>
+              <Controller control={control} name='customer_name' render={({field})=>(
+
+                <Input {...field}  placeholder='ابحث باسم العميل' size='large' />
+              )} />
+             </Col>
+             <Col xs={24} md={12} lg={4}>
+             <Controller control={control} name='customer_mobile' render={({field})=>(
+             <Input placeholder='ابحث برقم الهاتف' size='large' {...field} />
+             )}/>
+             </Col>
+             <Col xs={24} md={12} lg={4}>
+             <Controller control={control} name='invite_name' render={({field})=>(
+
+             <Input {...field} placeholder='ابحث باسم الدعوة' size='large'  />
+             )}/>
+             </Col>
+             <Col xs={24} md={12} lg={4}>
+             <Controller control={control} name='sending_status' render={({field})=>(
+
+              <Select dropdownStyle={{direction:'rtl'}} {...field} placeholder='ابحث بحالة الارسال' size='large' className='w-full' options={[{label:'تم الارسال',value:'sent'},{label:'لم يتم الارسال',value:'not_sent'}]} />
+             )}/>
+             </Col>
+             <Col xs={24} md={12} lg={6}>
+              <Row gutter={[24,24]}>
+                <Col xs={24} md={12} lg={12}>
+                  <Button type='primary' size='large' htmlType='submit'  className=' w-full bg-violet-600 flex items-center justify-center hover:!bg-violet-500' onClick={handleSubmit(handleSearch)}>بحث</Button>
+                </Col>
+                <Col xs={24} md={12} lg={12}>
+                  <Button type='primary' size='large'  className=' w-full bg-white text-violet-600 border-violet-600 flex items-center justify-center hover:!bg-white hover:!text-violet-600' onClick={handleClearSearch}>مسح</Button>
+                </Col>
+              </Row>               
+             </Col>
+             <Col xs={24} md={12} lg={2}>
+          <Button loading={loadingBtn} onClick={handleSendMessage}  type='primary' size='large' className='w-full  bg-violet-600 flex items-center justify-center hover:!bg-violet-500' icon={<MdWhatsapp fontSize={20}/>}>ارسال</Button>
+            
+             </Col>
+          </Row>
+        </form>
         <Table
          loading={loadingData}
           pagination={false}
@@ -151,6 +229,7 @@ function InviteTransactins() {
           style={{direction:'rtl'}}
           scroll={{
             x: 1000,
+            y:430
           }}
           rowSelection={{
             type: "checkbox",
@@ -160,8 +239,8 @@ function InviteTransactins() {
           columns={columns}
           dataSource={inviteTransactions}
         />
-        <div className=' bg-white p-3' dir='rtl'>
-        <Pagination style={{direction:'ltr'}} responsive onChange={changePage} pageSize={pageSize} defaultCurrent={pageNumber} total={totalPages} />
+        <div className=' bg-white p-3 mb-4' dir='rtl'>
+        <Pagination style={{direction:'ltr'}} responsive current={pageNumber} onChange={changePage} pageSize={pageSize} defaultCurrent={pageNumber} total={totalPages} />
         </div>
       </div>
       {/* send message modal */}

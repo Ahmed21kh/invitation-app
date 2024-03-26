@@ -12,10 +12,10 @@ import moment from "moment";
 const AddInvitation = () => {
   const [loadingAdd, setloadingAdd] = useState(false)
   const addUserSchema = yup.object().shape({
-    invite_name: yup.string().required("اسم المناسبة مطلوب"),
+    invite_name: yup.string().matches(/^[a-zA-Zا-ي]+(\s[a-zA-Zا-ي]+)*$/, 'الاسم يجب ان يحتوي علي حروف فقط').required("اسم المناسبة مطلوب"),
     from_date: yup.date().typeError("تاريخ البداية مطلوب").required("تاريخ البداية مطلوب"),
     to_date: yup.date().typeError("تاريخ النهاية مطلوب").required("تاريخ النهاية مطلوب"),
-    invite_desc: yup.string(),
+    invite_desc: yup.string().required('وصف الدعوة مطلوب'),
   });
 
   const {
@@ -75,7 +75,7 @@ console.log(errors);
     <form
       onSubmit={handleSubmit(submitAdd)}
       dir="rtl"
-      className="  bg-white max-w-[700px] w-[90%] flex flex-col gap-4 p-8 rounded-lg shadow-lg h-fit mt-[50px]"
+      className="  bg-white max-w-[700px] w-[90%] flex flex-col gap-4 p-8 rounded-lg shadow-lg h-fit my-[100px]"
     >
       <label className=" text-2xl ">اضافة مناسبة</label>
       <div className=" w-full relative ">

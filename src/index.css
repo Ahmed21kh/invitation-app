@@ -12,16 +12,18 @@
   font-family: "Cairo", sans-serif;
 }
 body{
-  height: 100vh;
+  /* height: 100vh; */
+  margin: 0px;
+
 }
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 6px;
   height: 2px !important;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #c6c6c6;
+  background: #dadada;
   height: 2px !important;
 }
 
@@ -29,9 +31,14 @@ body{
 ::-webkit-scrollbar-thumb {
   background: #888;
   height: 2px !important;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #7a7a7a;
 }

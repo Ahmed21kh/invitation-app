@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { MdInsertInvitation, MdOutlineInsertInvitation } from "react-icons/md";
+import { BiEnvelope } from "react-icons/bi";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { Layout, Menu, Switch, Tooltip, theme } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -21,8 +22,8 @@ const items = [
     title: "اضافة دعوة",
     route: "/add-inviteTransaction",
   },
-  // { icon: HiOutlineUsers, title: "العملاء", route: "/customers" },
-  { icon: HiOutlineUsers, title: "الدعوات", route: "/inviteTransactions" },
+  { icon: HiOutlineUsers, title: "العملاء", route: "/customers" },
+  { icon: BiEnvelope , title: "الدعوات", route: "/inviteTransactions" },
 
 ].map((item, index) => ({
   key: item.route,
@@ -93,16 +94,16 @@ const DashboardLayout = () => {
           style={{
             background: colorBgContainer,
           }}
-          className=" shadow-md px-4 flex items-center"
+          className=" shadow-md px-4 flex items-center fixed right-[200px] z-10 left-0"
         >
            <WhatsappComp/>
         </Header>
         <Content
           style={{
-            margin: "24px 16px 0",
+            // margin: "24px 16px 20px",
             overflow: "initial",
           }}
-          className=" flex justify-center py-[50px] h-[90vh]"
+          className=" flex justify-center  pt-[50px] !overflow-auto  h-[100vh]"
         >
           <Outlet />
         </Content>

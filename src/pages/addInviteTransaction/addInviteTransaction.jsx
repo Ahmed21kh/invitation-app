@@ -37,7 +37,7 @@ const AddInviteTransaction = () => {
         getInvitationsApi()
           .then((res) => {
             console.log(res);
-            setinvitations(res[0]?.data);
+            setinvitations(res);
             setloadingData(false);
           })
           .catch((e) => {
@@ -54,7 +54,7 @@ const AddInviteTransaction = () => {
           getCustomersApi()
             .then((res) => {
               console.log(res);
-              setcustomers(res[0]?.data);
+              setcustomers(res);
               setloadingData(false);
             })
             .catch((e) => {
@@ -98,6 +98,8 @@ const AddInviteTransaction = () => {
         message.error(error.message);
       }
     };
+    const filterOption = (input, option) =>
+  (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
     useEffect(() => {
       console.log(dirtyFields);
       console.log(touchedFields);
@@ -108,7 +110,7 @@ const AddInviteTransaction = () => {
       <form
         onSubmit={handleSubmit(submitAdd)}
         dir="rtl"
-        className="  bg-white max-w-[700px] w-[90%] flex flex-col gap-4 p-8 rounded-lg shadow-lg h-fit mt-[60px]"
+        className="  bg-white max-w-[700px] w-[90%] flex flex-col gap-4 p-8 rounded-lg shadow-lg h-fit mt-[150px]"
       >
         <label className=" text-2xl ">اضافة دعوة</label>
         <div className=" w-full relative ">
@@ -120,10 +122,13 @@ const AddInviteTransaction = () => {
             control={control}
             render={({ field }) => (
                 <Select
+                loading={loadingData}
+                showSearch
                 placeholder="اختر العميل"
                 className=" w-full"
                 size="large"
                 dropdownStyle={{ direction: "rtl" }}
+                filterOption={filterOption}
                 options={customers.map((data) => {
                   return { value: data._id, label: data.customer_name };
                 })}
@@ -146,10 +151,13 @@ const AddInviteTransaction = () => {
             control={control}
             render={({ field }) => (
               <Select
+              loading={loadingData}
+                showSearch
                 placeholder="اختر الدعوة"
                 className=" w-full"
                 size="large"
                 dropdownStyle={{ direction: "rtl" }}
+                filterOption={filterOption}
                 options={invitations.map((data) => {
                   return { value: data._id, label: data.invite_name };
                 })}

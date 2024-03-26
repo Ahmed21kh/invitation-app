@@ -210,9 +210,13 @@ const WhatsappComp = () => {
       // clearTimeout(timer)
     });
 
-    // socket.on('disconnect', () => {
-    //   console.log('Disconnected from server');
-    // });
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server');
+      // setActive(false);
+      // setActiveStatus("مغلق");
+      // localStorage.removeItem("Auth")
+      // setAuth(false);
+    });
 
     return () => {
       socket.off("connect");
@@ -282,6 +286,7 @@ const WhatsappComp = () => {
             onChange={onChangeActive}
             loading={activeLoading}
             className=" "
+            value={active}
           />
         </Tooltip>
         <div>{activeStatus}</div>

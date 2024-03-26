@@ -5,6 +5,7 @@ import * as yup from "yup";
 import PhoneInput from "react-phone-input-2";
 import "./addCustomer.css";
 import "react-phone-input-2/lib/style.css";
+import ar from 'react-phone-input-2/lang/ar.json';
 import { Button, DatePicker, Input, QRCode, Select, message } from "antd";
 import { addCustomerApi, getInvitationsApi } from "../../services/Apis";
 
@@ -13,15 +14,14 @@ const AddCustomer = () => {
   const [loadingAdd, setloadingAdd] = useState(false);
   const [invitations, setinvitations] = useState([]);
   const [qrObject, setqrObject] = useState({});
+  const phoneRegExp = /^[+]?[0-9]{1,3}?[-. (]?([0-9]{3})[-. )]?([0-9]{3})[-. ]?([0-9]{4})$/;
+
   const addUserSchema = yup.object().shape({
-    customer_name: yup.string().required("اسم العميل مطلوب"),
+    customer_name: yup.string().matches(/^[a-zA-Zا-ي]+(\s[a-zA-Zا-ي]+)*$/, 'الاسم يجب ان يحتوي علي حروف فقط').required("اسم العميل مطلوب"),
     customer_mobile: yup
-      .string(" رقم الهاتف غير صحيح")
-      .min(11, " رقم الهاتف غير صحيح")
-      .matches(
-        /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
-        " رقم الهاتف غير صحيح"
-      )
+      .string().typeError("رقم الهاتف غير صحيح")
+      .matches(phoneRegExp, 'رقم الهاتف غير صحيح')
+      .min(12, " رقم الهاتف يجب ان لا يقل عن 12 رقم")
       .required(" رقم الهاتف مطلوب"),
   });
 
@@ -89,7 +89,7 @@ const AddCustomer = () => {
     <form
       onSubmit={handleSubmit(submitAdd)}
       dir="rtl"
-      className="  bg-white max-w-[700px] w-[90%] flex flex-col gap-4 p-8 rounded-lg shadow-lg h-fit mt-[60px]"
+      className="  bg-white max-w-[700px] w-[90%] flex flex-col gap-4 p-8 rounded-lg shadow-lg h-fit mt-[150px]"
     >
       <label className=" text-2xl ">اضافة عميل</label>
       <div className=" w-full relative ">
@@ -123,16 +123,19 @@ const AddCustomer = () => {
           control={control}
           render={({ field }) => (
             <PhoneInput
-              containerClass=" w-full"
-              inputStyle={{ direction: "rtl" }}
-              inputClass=" !w-full !pr-[48px] !h-[40px]"
-              searchClass=" !w-full"
-              dropdownClass=" !text-center"
-              autocompleteSearch
-              enableSearch
-              //   inputProps={}
-              {...field}
-              country={"eg"}
+            containerClass=" w-full"
+            inputStyle={{ textAlign:'right' }}
+            inputClass=" !w-full !pr-[48px] !h-[40px]"
+            searchClass=" !w-full"
+            dropdownClass=" !text-center"
+            localization={ar}
+            autocompleteSearch
+            enableSearch
+            enableAreaCodes={true}
+            country={"eg"}
+            value={field.value}
+            onChange={field.onChange}
+                // inputProps={{...field}}
             />
           )}
         />
@@ -149,6 +152,7 @@ const AddCustomer = () => {
           type="primary"
           htmlType="submit"
           className="  mt-6 mb-3 bg-violet-600 hover:!bg-violet-500  w-full"
+          onClick={handleSubmit(submitAdd)}
         >
           حفظ
         </Button>

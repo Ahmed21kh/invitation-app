@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Col, Divider, Input, Modal, Pagination, Radio, Row, Table, Tooltip, message } from 'antd';
 import { MdInfo, MdInfoOutline, MdWhatsapp } from 'react-icons/md';
-import { getCustomersApi } from '../../services/Apis';
+import { getAllCustomersApi, getCustomersApi } from '../../services/Apis';
 import "./customers.css"
+import { Controller, useForm } from 'react-hook-form';
 
 const Customers = () => {
   const [selectionType, setSelectionType] = useState('checkbox');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customers, setcustomers] = useState([])
   const [loadingData, setloadingData] = useState(false)
-  const [pageSize, setpageSize] = useState(5)
+  const [pageSize, setpageSize] = useState(10)
   const [pageNumber, setpageNumber] = useState(1)
   const [totalPages, settotalPages] = useState(0)
   const [inviteDetailsModal, setinviteDetailsModal] = useState(false)
   const [inviteDetails, setinviteDetails] = useState({})
+  const [searchQuery, setsearchQuery] = useState('')
+  const {register, getValues , setValue , handleSubmit , control , watch,reset} = useForm()
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -29,10 +32,10 @@ const Customers = () => {
   const getAllCustomers = () =>{
     try {
       setloadingData(true)
-      getCustomersApi(pageNumber,pageSize).then((res)=>{
+      getAllCustomersApi(pageNumber,pageSize,searchQuery).then((res)=>{
         console.log(res);
-        let newData = res[0]?.data?.map((e,i)=>{return{key:i,...e}})
-        let total = res[0]?.metaData[0]?.totalPages
+        let newData = res?.data?.map((e,i)=>{return{key:i,...e}})
+        let total = res?.metaData[0]?.total
         setcustomers(newData)
         settotalPages(total)
        setloadingData(false)
@@ -59,9 +62,30 @@ const closeInviteModal = ()=>{
 setinviteDetailsModal(false)
 setinviteDetails({});
 }
+
+const handleClearSearch = ()=>{
+ reset({
+  customer_name: '',
+  customer_mobile: ''
+ })
+ setsearchQuery('')
+}
+const handleSearch = (data)=>{
+  console.log(data);
+  const {customer_name, customer_mobile} = data;
+ let x = ''
+ if(customer_name){
+   x += `&customer_name=${customer_name}&`
+ }
+ if(customer_mobile){
+   x += `&customer_mobile=${customer_mobile}&`
+ }
+ setsearchQuery(x)
+ setpageNumber(1)
+}
   useEffect(() => {
   getAllCustomers()
-  }, [pageNumber])
+  }, [pageNumber , searchQuery])
 
 
   const columns = [
@@ -72,36 +96,7 @@ setinviteDetails({});
     {
       title: 'رقم الهاتف',
       dataIndex: 'customer_mobile',
-    },
-    {
-      title: 'الدعوة',
-      render:(records) => <span>{records?.inviteDetails?.invite_name}</span>
-    },
-    {
-      title: 'تاريخ نهاية الدعوة',
-      render:(records) => <span>{records?.inviteDetails?.to_date?.split('T')[0]}</span>
-  
-    },
-    {
-      title: 'حالة الحضور',
-      dataIndex: 'isAttend',
-      render:(record)=> <span className={`${record?'text-[green]':'text-[red]'}`}>{record?'تم الحضور':'لم يحضر'}</span>
-    },
-    {
-      title: 'حالة الارسال',
-      dataIndex: 'isSend',
-      render:(record)=> <span className={`${record?'text-[green]':'text-[red]'}`}>{record?'تم الارسال':'لم يرسل اليه'}</span>
-  
-    },
-    {
-      title: '',
-      render:(record) => <span onClick={()=>openInviteModal(record?.inviteDetails)} className=' cursor-pointer !w-full flex justify-start items-center'>
-        <Tooltip title="تفاصيل الدعوة">
-  
-        <MdInfoOutline fontSize={22} className=' text-violet-600'/>
-        </Tooltip>
-      </span>
-    },
+    }
   ];
   
   // rowSelection object indicates the need for row selection
@@ -117,25 +112,51 @@ setinviteDetails({});
   };
   return (
     <>
-    <div className=' w-full px-5'>
-      <div className=' my-4'>
-        <Button onClick={showModal} type='primary' size='large' className='  bg-violet-600 flex items-center hover:!bg-violet-500' icon={<MdWhatsapp fontSize={20}/>}>ارسال</Button>
-      </div>
+     <div className=' w-full h-full px-5 pt-[80px] overflow-auto '>
+    <form onSubmit={handleSubmit(handleSearch)} className=' my-4'>
+          <Row  dir='rtl'  gutter={[24,24]}>
+             <Col xs={24} md={12} lg={4}>
+              <Controller control={control} name='customer_name' render={({field})=>(
+
+                <Input {...field}  placeholder='ابحث باسم العميل' size='large' />
+              )} />
+             </Col>
+             <Col xs={24} md={12} lg={4}>
+             <Controller control={control} name='customer_mobile' render={({field})=>(
+             <Input placeholder='ابحث برقم الهاتف' size='large' {...field} />
+             )}/>
+             </Col>
+             <Col xs={24} md={12} lg={6}>
+              <Row gutter={[24,24]}>
+                <Col xs={24} md={12} lg={12}>
+                  <Button type='primary' size='large' htmlType='submit'  className=' w-full bg-violet-600 flex items-center justify-center hover:!bg-violet-500' onClick={handleSubmit(handleSearch)}>بحث</Button>
+                </Col>
+                <Col xs={24} md={12} lg={12}>
+                  <Button type='primary' size='large'  className=' w-full bg-white text-violet-600 border-violet-600 flex items-center justify-center hover:!bg-white hover:!text-violet-600' onClick={handleClearSearch}>مسح</Button>
+                </Col>
+              </Row>               
+             </Col>
+          </Row>
+        </form>
       <Table
        loading={loadingData}
         pagination={false}
         direction='rtl'
         style={{direction:'rtl'}}
-        rowSelection={{
-          type: "checkbox",
-          ...rowSelection,
+        scroll={{
+          x: 1000,
+          y:430
         }}
+        // rowSelection={{
+        //   type: "checkbox",
+        //   ...rowSelection,
+        // }}
         className=' shadow-lg'
         columns={columns}
         dataSource={customers}
       />
       <div className=' bg-white p-3' dir='rtl'>
-      <Pagination style={{direction:'ltr'}} responsive onChange={changePage} defaultCurrent={pageNumber} total={totalPages} />
+      <Pagination style={{direction:'ltr'}} responsive current={pageNumber} onChange={changePage} defaultCurrent={pageNumber} total={totalPages} />
       </div>
     </div>
     {/* send message modal */}
