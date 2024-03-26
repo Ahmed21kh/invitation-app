@@ -107,14 +107,15 @@ const WhatsappComp = () => {
     const allData = new Map([])
     checklist.forEach((val)=>{
       Object.keys(val).map((key)=>{
-        console.log(key);
+        // console.log(key);
+        console.log(val);
         if (key !== "id") {       
           allData.set(key,val[key]);
         }
       })
-      console.log(allData);
+      console.log("allData",allData);
     })
-    console.log(checklist);
+    console.log("checklist",checklist);
   }, [checklist]);
 
   useEffect(() => {

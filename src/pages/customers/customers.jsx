@@ -151,7 +151,7 @@ const handleSearch = (data)=>{
         //   type: "checkbox",
         //   ...rowSelection,
         // }}
-        className=' shadow-lg'
+        className=' shadow-lg mt-8'
         columns={columns}
         dataSource={customers}
       />

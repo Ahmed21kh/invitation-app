@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Col, Divider, Input, Modal, Pagination, Radio, Row, Select, Table, Tooltip, message } from 'antd';
+import { Button, Checkbox, Col, Divider, Input, Modal, Pagination, Radio, Row, Select, Table, Tooltip, message } from 'antd';
 import { MdInfo, MdInfoOutline, MdWhatsapp } from 'react-icons/md';
 import { getInviteTransactionApi } from '../../services/Apis';
 import "./inviteTransactins.css"
@@ -14,6 +14,7 @@ function InviteTransactins() {
     const [pageNumber, setpageNumber] = useState(1)
     const [totalPages, settotalPages] = useState(0)
     const [inviteDetailsModal, setinviteDetailsModal] = useState(false)
+    const [idList, setidList] = useState([])
     const [inviteDetails, setinviteDetails] = useState({})
      const {
         setChecklist,
@@ -42,7 +43,7 @@ function InviteTransactins() {
         setloadingData(true)
         getInviteTransactionApi(pageNumber,pageSize , searchQuery).then((res)=>{
           console.log(res);
-          let newData = res[0]?.data?.map((e,i)=>{return{key:i,...e}})
+          let newData = res[0]?.data?.map((e,i)=>{return{key:e._id,...e}})
           let total = res[0]?.metaData[0]?.total
           console.log(total);
           setinviteTransactions(newData)
@@ -59,9 +60,11 @@ function InviteTransactins() {
       }
     }
   
-    const handleCheckboxChange =(data)=>{
+    const handleCheckboxChange =(selectedKeys,data)=>{
      console.log(data);
-     setChecklist([...data?.filter((d)=>d.sending_status == "not_sent")?.map((e)=>{return {[e.customerDetails.customer_mobile]:`السيد ${e.customerDetails.customer_name} انت مدعو لحضور ${e.inviteDetails.invite_desc}` , id:e._id }})])
+     console.log(selectedKeys);
+     setidList([...selectedKeys])
+       setChecklist([...data?.map((e)=>{return {[e._id]:{phone:e.customerDetails.customer_mobile,msg:`السيد ${e.customerDetails.customer_name} انت مدعو لحضور ${e.inviteDetails.invite_desc}` , id:e._id }}})])
     }
 
     const changePage=(e)=>{
@@ -111,10 +114,19 @@ function InviteTransactins() {
     useEffect(() => {
      getAllinviteTransactions()
     }, [searchQuery ,pageNumber])
+
+    const renderCells = (e,records) => {
+      console.log(e);
+      console.log(records);
+      return (<>
+       <Checkbox checked={checklist.some(e=>e.id == records._id)} />
+      </>)    
+    }
   
     useEffect(() => {
       if (socket) {
        socket.on("updatedData",(data) => {
+        setidList(prev=>[...prev.filter(e=>e !== data._id)])
        getAllinviteTransactions()
           // setinviteTransactions(prev =>[...prev.map((d)=>d._id === data._id?{...d,sending_status:data?.sending_status}:d)])
        })   
@@ -170,12 +182,12 @@ function InviteTransactins() {
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-        handleCheckboxChange(selectedRows)
+        handleCheckboxChange(selectedRowKeys,selectedRows)
       },
       getCheckboxProps: (record) => ({
         disabled: record.sending_status === 'sent',
         // Column configuration not to be checked
-        name: record.customerDetails.customer_name,
+        name: record._id,
       }),
     };
     return (
@@ -233,9 +245,15 @@ function InviteTransactins() {
           }}
           rowSelection={{
             type: "checkbox",
+            // renderCell:renderCells,
+            selectedRowKeys: [...idList],
+            checkStrictly:true,
+            preserveSelectedRowKeys:true,
+            hideSelectAll:false,
+            selections: ["SELECT_ALL","SELECT_INVERT","SELECT_NONE"],
             ...rowSelection,
           }}
-          className=' shadow-lg'
+          className=' shadow-lg mt-8'
           columns={columns}
           dataSource={inviteTransactions}
         />

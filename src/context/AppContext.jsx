@@ -110,7 +110,7 @@ export function AppContext({ children }) {
         Object.keys(val).map((key)=>{
           console.log(key);
           if (key !== "id") {
-            allData.set(key,{mesg:val[key],id:val.id});
+            allData.set(key,val[key]);
           }
         })
         console.log(allData);
@@ -119,7 +119,7 @@ export function AppContext({ children }) {
 
     allData.forEach((value, key) => {
         console.log({key,value});
-        List.push({key,value:value?.mesg,id:value.id});
+        List.push({key:value.phone,value:value.msg,id:value.id});
       });
         socket.emit("sendMediaToAll", {
           whatsappList:List,
